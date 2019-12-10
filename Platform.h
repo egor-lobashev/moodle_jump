@@ -1,9 +1,26 @@
 #include <stdio.h>
 #include <iostream>
+#include <SFML/Graphics.hpp>
+
 
 const int window_height = 600, window_width = 200,
 		platform_height = 10, platform_width = 30,
 		platforms_rate = 100;
+
+const sf::Sprite platform_sprites[3];
+
+
+void init_platform_sprites()
+{
+	for (int i = 0; i<3; ++i)
+	{
+		sf::Image image;
+		image.loadFromFile("platform_" + i + ".png");
+		sf::Texture texture;
+		texture.loadFromImage(background);
+		platform_sprites[i].setTexture(background_texture);
+	}
+}
 
 
 class Platform // : Drawable
@@ -28,12 +45,12 @@ public:
 			x += v * dt;
 		}
 	}
-/*
+
 	draw(&sf::RenderWindow window)
 	{
-		window.blit(...);
+		window.draw(platform_sprites[i]);
 	}
-*/
+
 	void print()
 	{
 		printf("(%d, %d, %d)", x, y, kind);

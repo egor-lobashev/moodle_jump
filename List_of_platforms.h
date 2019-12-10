@@ -58,6 +58,7 @@ public:
 	void init()
 	{
 		generate(0);
+		init_platform_sprites();
 	}
 
 	void update(int height, float dt)
