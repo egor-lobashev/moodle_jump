@@ -48,6 +48,7 @@ public:
 
 	draw(&sf::RenderWindow window)
 	{
+		sprite.setPosition(x,y);
 		window.draw(platform_sprites[i]);
 	}
 
