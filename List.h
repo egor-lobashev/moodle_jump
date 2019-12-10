@@ -11,11 +11,6 @@ public:
 		next = nullptr;
 		value = nullptr;
 	}
-
-	~Node()
-	{
-		delete value;
-	}
 };
 
 
@@ -52,12 +47,11 @@ public:
 		return length;
 	}
 
-	void push_front(Platform value)
+	void push_front(Platform* value)
 	{
 		Node* first = new Node;
 
-		Platform* new_value = new Platform(value.x, value.y, value.kind);
-		first->value = new_value;
+		first->value = value;
 		first->next = head;
 
 		head = first;
@@ -72,7 +66,7 @@ public:
 		return pop_value;
 	}
 
-	void insert(Platform& value, int index)
+	void insert(Platform* value, int index)
 	{
 		if (index == 0)
 		{
@@ -82,7 +76,7 @@ public:
 
 			Node* new_node = new Node;
 
-			new_node->value = &value;
+			new_node->value = value;
 			new_node->next = previous_node->next;
 
 			previous_node->next = new_node;
@@ -105,7 +99,7 @@ public:
 		}
 	}
 
-	void push_back(Platform& value)
+	void push_back(Platform* value)
 	{
 		Node** current_node = &head;
 		while (*current_node != nullptr)
@@ -115,7 +109,7 @@ public:
 
 		Node* last = new Node;
 
-		last->value = &value;
+		last->value = value;
 		last->next = nullptr;
 
 		*current_node = last;
@@ -148,12 +142,7 @@ public:
 
 	Platform& operator[](int index)
 	{
-		Node* current_node = head;
-		for (int i=0; i<index; ++i)
-		{
-			current_node = current_node->next;
-		}
-		return *current_node->value;
+		return *find_by_index(index)->value;
 	}
 
 	Platform& find(int index)

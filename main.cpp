@@ -2,23 +2,26 @@
 #include "List_of_platforms.h"
 
 /*
-const int window_heghth = 650, window_width = 400,
-		platform_heghth = 10, platform_width = 30,
+const int window_heighth = 650, window_width = 400,
+		platform_heighth = 10, platform_width = 30,
 		platforms_rate = 100;
 */
 
 
+void menu()
+{
+	
+}
+
 void main_cycle(sf::RenderWindow& window, List_of_platforms& platforms)
 {
-	int heghth = 0;
+	int heighth = 0;
 	sf::Clock clock;
 
 	while (window.isOpen())
 	{
 		float dt = clock.getElapsedTime().asSeconds();
 		clock.restart();
-
-		// --control--
 
 		sf::Event event;
 		while (window.pollEvent(event))
@@ -27,13 +30,11 @@ void main_cycle(sf::RenderWindow& window, List_of_platforms& platforms)
 				window.close();
 		}
 
-		// ...
-
 
 		// --logics--
 
 		// update objcts
-		platforms.update(heghth);
+		platforms.update(heighth);
 
 
 		// --drawing--
@@ -48,7 +49,7 @@ void main_cycle(sf::RenderWindow& window, List_of_platforms& platforms)
 int main()
 {
 	// begining
-	sf::RenderWindow window(sf::VideoMode(window_width, window_heghth), "Moodle Jump");
+	sf::RenderWindow window(sf::VideoMode(window_width, window_heighth), "Moodle Jump");
 	srand(time(nullptr));
 
 	List_of_platforms platforms;

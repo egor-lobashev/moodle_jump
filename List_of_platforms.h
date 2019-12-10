@@ -1,56 +1,68 @@
 #include "List.h"
 #include <random>
 
-const int window_heghth = 600, window_width = 200,
-		platform_heghth = 10, platform_width = 30,
-		platforms_rate = 100;
 
-
-class List_of_platforms: public List
+class List_of_platforms
 {
 private:
 	bool initialized = false;
-	int previous_heighth = 0;
+	int previous_height = 0, speed = 1;
 
-	void move_platforms(int heghth)
+	void move_platforms(int height, float dt)
 	{
-		int dy = heghth - previous_heighth;
-		previous_heighth = heghth;
+		int dy = height - previous_height;
+		std::cout << dy << "\n";
+		previous_height = height;
 
-		for (int i = this->length()-1; i >= 0; --i)
+		for (int i = list.length()-1; i >= 0; --i)
 		{
-			this->find(i).y += dy;
-			if (this->find(i).y > window_heghth)
+			Platform& current_platform = list[i];
+
+			current_platform.y += dy;
+			current_platform.update(dt);
+
+			if (current_platform.y > window_height)
 			{
-				this->pop(i);
+				delete &current_platform;
+				list.pop(i);
 			}
 		}
 	}
 
-	void generate(int heghth)
+	void generate(int height)
 	{
-		while (heghth - revealed > -platform_heghth)
+		while (height - revealed > -platform_height)
 		{
 			if (std::rand()%100 <= platforms_rate)
 			{
 				int x = std::rand() % (window_width - platform_width);
-				this->push_front(Platform(x, heghth - revealed, 0));
+				int kind_randomizer = random() % 100;
+				int kind;
+				int v = speed*(random()%2 == 1 ? 1 : -1);
+
+				if (kind_randomizer <= 10) kind = 1;
+				else if (kind_randomizer <= 30) kind = 2;
+				else kind = 0;
+
+				Platform* new_platform = new Platform(x, height - revealed, kind, v);
+				list.push_front(new_platform);
 			}
-			revealed += platform_heghth;
+			revealed += platform_height;
 		}
 	}
 
 public:
-	int revealed = -window_heghth;
+	List list;
+	int revealed = -window_height;
 
 	void init()
 	{
 		generate(0);
 	}
 
-	void update(int heghth)
+	void update(int height, float dt)
 	{
-		move_platforms(heghth);
-		generate(heghth);
+		move_platforms(height, dt);
+		generate(height);
 	}
 };
