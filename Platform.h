@@ -2,54 +2,42 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
-
-const int window_height = 600, window_width = 200,
-		platform_height = 10, platform_width = 30,
+const int window_height = 650, window_width = 400,
+		platform_height = 25, platform_width = 100,
 		platforms_rate = 100;
 
-const sf::Sprite platform_sprites[3];
 
-
-void init_platform_sprites()
-{
-	for (int i = 0; i<3; ++i)
-	{
-		sf::Image image;
-		image.loadFromFile("platform_" + i + ".png");
-		sf::Texture texture;
-		texture.loadFromImage(background);
-		platform_sprites[i].setTexture(background_texture);
-	}
-}
-
-
-class Platform // : Drawable
+class Platform
 {
 public:
-	int x, y, v, kind;
+	float x, y, v;
+	int kind;
+	sf::Sprite sprite;
 
-	Platform(int x, int y, int kind, int v)
+	Platform(float x, float y, int kind, float v, sf::Sprite* platform_sprites)
 	{
 		this->x = x;
 		this->y = y;
 		this->kind = kind;
 		this->v = v;
+		sprite = platform_sprites[kind];
 	}
+	
 
 	void update(float dt)
 	{
 		if (kind == 2)
 		{
-			if ((x < 0) or (x > window_width - platform_width))
+			if (((x <= 0) and (v < 0)) or ((x >= window_width - platform_width) and (v > 0)))
 				v *= -1;
 			x += v * dt;
 		}
 	}
 
-	draw(&sf::RenderWindow window)
+	void draw(sf::RenderWindow& window)
 	{
 		sprite.setPosition(x,y);
-		window.draw(platform_sprites[i]);
+		window.draw(sprite);
 	}
 
 	void print()

@@ -1,17 +1,18 @@
 #include "List.h"
 #include <random>
+#include <cmath>
 
-
-class List_of_platforms
-{
+class List_of_platforms {
 private:
 	bool initialized = false;
-	int previous_height = 0, speed = 1;
+	int previous_height = 0;
+	int since_last_normal = 0;
+	int max_since_last_normal = 5;
 
-	void move_platforms(int height, float dt)
+	void move_platforms(float height, float dt)
 	{
 		int dy = height - previous_height;
-		std::cout << dy << "\n";
+		
 		previous_height = height;
 
 		for (int i = list.length()-1; i >= 0; --i)
@@ -29,41 +30,68 @@ private:
 		}
 	}
 
-	void generate(int height)
+	
+	void generate(float height)
 	{
-		while (height - revealed > -platform_height)
+		while (height - revealed > -30)
 		{
-			if (std::rand()%100 <= platforms_rate)
+			if ((std::rand()%100 <= 20+100/pow(0.1*height+1, 1)) or (since_since_last_normal > max_since_last_normal))
 			{
-				int x = std::rand() % (window_width - platform_width);
+				float x = std::rand() % (window_width - platform_width);
 				int kind_randomizer = random() % 100;
 				int kind;
-				int v = speed*(random()%2 == 1 ? 1 : -1);
+				float v = ( 5000-5000/pow(0.1*height+10, 0.01) )*(random()%2 == 1 ? 1 : -1);
 
-				if (kind_randomizer <= 10) kind = 1;
-				else if (kind_randomizer <= 30) kind = 2;
+				if ((kind_randomizer <= 10) and (since_last_normal <= max_since_last_normal)) kind = 1;
+				else if (kind_randomizer <= 100-100/pow(0.1*height+1, 1)) kind = 2;
 				else kind = 0;
 
-				Platform* new_platform = new Platform(x, height - revealed, kind, v);
+				if (kind != 1) since_last_normal = 0;
+
+				Platform* new_platform = new Platform(x, height - revealed, kind, v, platform_sprites);
 				list.push_front(new_platform);
 			}
-			revealed += platform_height;
+			revealed += 30;
+			since_last_normal += 1;
 		}
 	}
 
 public:
 	List list;
 	int revealed = -window_height;
+	sf::Sprite* platform_sprites = new sf::Sprite[3];
 
-	void init()
+	sf::Texture texture_0;
+	sf::Texture texture_1;
+	sf::Texture texture_2;
+	
+	List_of_platforms()
 	{
+		texture_0.loadFromFile("images/platform_0.png");
+		texture_1.loadFromFile("images/platform_1.png");
+		texture_2.loadFromFile("images/platform_2.png");
+
+		platform_sprites[0].setTexture(texture_0);
+		platform_sprites[1].setTexture(texture_1);
+		platform_sprites[2].setTexture(texture_2);
+
 		generate(0);
-		init_platform_sprites();
 	}
 
-	void update(int height, float dt)
+	void update(float height, float dt)
 	{
 		move_platforms(height, dt);
 		generate(height);
+	}
+
+	void draw(sf::RenderWindow& window){
+
+		int amount_of_objects = list.length();
+		for(int i = 0;i < amount_of_objects ; i++){
+
+			list[i].draw(window);
+
+		}
+
 	}
 };
