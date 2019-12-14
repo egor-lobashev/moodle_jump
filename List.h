@@ -158,17 +158,6 @@ public:
 		}
 	}
 
-	void print()
-	{
-		Node* current_node = head;
-		while (current_node != nullptr)
-		{
-			current_node->value->print();
-			current_node = current_node->next;
-		}
-		printf("\n");
-	}
-
 	void operator=(List& another)
 	{
 		clear();

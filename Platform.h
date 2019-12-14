@@ -1,10 +1,8 @@
-#include <stdio.h>
-#include <iostream>
 #include <SFML/Graphics.hpp>
 
+
 const int window_height = 650, window_width = 400,
-		platform_height = 25, platform_width = 100,
-		platforms_rate = 100;
+		platform_height = 25, platform_width = 100;
 
 
 class Platform
@@ -22,7 +20,6 @@ public:
 		this->v = v;
 		sprite = platform_sprites[kind];
 	}
-	
 
 	void update(float dt)
 	{
@@ -38,11 +35,6 @@ public:
 	{
 		sprite.setPosition(x,y);
 		window.draw(sprite);
-	}
-
-	void print()
-	{
-		printf("(%d, %d, %d)", x, y, kind);
 	}
 
 	void operator=(Platform& another)

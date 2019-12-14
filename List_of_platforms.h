@@ -1,13 +1,13 @@
 #include "List.h"
 #include <random>
-#include <cmath>
+
 
 class List_of_platforms {
 private:
 	bool initialized = false;
 	int previous_height = 0;
 	int since_last_normal = 0;
-	int max_since_last_normal = 5;
+	int max_since_last_normal = 6;
 
 	void move_platforms(float height, float dt)
 	{
@@ -35,15 +35,15 @@ private:
 	{
 		while (height - revealed > -30)
 		{
-			if ((std::rand()%100 <= 20+100/pow(0.1*height+1, 1)) or (since_since_last_normal > max_since_last_normal))
+			if ((std::rand()%100 <= 10 + 100/(0.0005*height+1)) or (since_last_normal > max_since_last_normal))
 			{
 				float x = std::rand() % (window_width - platform_width);
 				int kind_randomizer = random() % 100;
 				int kind;
-				float v = ( 5000-5000/pow(0.1*height+10, 0.01) )*(random()%2 == 1 ? 1 : -1);
+				float v = ( 500-500/(0.0001*height+1) )*(random()%2 == 1 ? 1 : -1);
 
 				if ((kind_randomizer <= 10) and (since_last_normal <= max_since_last_normal)) kind = 1;
-				else if (kind_randomizer <= 100-100/pow(0.1*height+1, 1)) kind = 2;
+				else if (kind_randomizer <= 100-100/(0.0001*height+1)) kind = 2;
 				else kind = 0;
 
 				if (kind != 1) since_last_normal = 0;
