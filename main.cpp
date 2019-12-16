@@ -1,22 +1,39 @@
 #include <SFML/Graphics.hpp>
+#include <string>
 #include "List_of_platforms.h"
-#include "vector2I.h"
 #include "Person.h"
+#include "Graphics_manager.h"
 
 
-bool is_mouse_position_in_district_of_button(){
+class Background: public Drawable
+{
+public:
+	sf::Texture texture;
+	sf::Sprite sprite;
 
-	vector2I mouse = {sf::Mouse::getPosition().x, sf::Mouse::getPosition().y};
-	vector2I button = {220,660};
+	Background(const std::string& filename)
+	{
+		texture.loadFromFile(filename);
+		sprite.setTexture(texture);
+	}
 
-	if(mouse.x >= button.x && mouse.x <= button.x + 200 &&
-		mouse.y >= button.y && mouse.y <= button.y + 50 )
-		{
-			return true;
-		}
+	void draw(sf::RenderWindow& window)
+	{
+		window.draw(sprite);
+	}
+};
+	
+bool is_mouse_position_in_district_of_button()
+{
+	int mouse_x = sf::Mouse::getPosition().x, mouse_y = sf::Mouse::getPosition().y;
+	int button_x = 220, button_y = 600;
 
+	if(mouse_x >= button_x && mouse_x <= button_x + 200 &&
+	mouse_y >= button_y && mouse_y <= button_y + 50 )
+	{
+		return true;
+	}
 	return false;
-
 }
 
 
@@ -92,13 +109,17 @@ void main_cycle(sf::RenderWindow& window)
 	float height = 0;
 	sf::Clock clock;
 
-	sf::Texture background_texture;
-	background_texture.loadFromFile("images/background.png");
-	sf::Sprite background;
-	background.setTexture(background_texture);
+	Background background("images/background.png");
 
 	List_of_platforms platforms;
 	Person person;
+
+	Graphics_manager graphics_manager;
+	graphics_manager.add(person);
+	graphics_manager.add(platforms);
+	graphics_manager.add(background);
+	
+	
 
 	while (window.isOpen())
 	{
@@ -118,7 +139,9 @@ void main_cycle(sf::RenderWindow& window)
 		}
 
 		update_all_objects(platforms,person,height,dt);
-		draw_all_objects(window,platforms,person,background);
+
+		graphics_manager.draw_all(window);
+		window.display();
 	}
 }
 
