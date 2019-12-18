@@ -23,6 +23,40 @@ public:
 		window.draw(sprite);
 	}
 };
+
+
+class My_text: public Drawable
+{
+public:
+	std::string txt;
+	int x, y;
+	sf::Color color;
+
+	My_text(std::string txt, int x, int y, sf::Color color = sf::Color::Black)
+	{
+		this->txt = txt;
+		this->x = x;
+		this->y = y;
+		this->color = color;
+	}
+
+	void update(int height)
+	{
+		txt = "score: " + std::to_string(height);
+	}
+
+	void draw(sf::RenderWindow& window)
+	{
+		sf::Font font;
+		font.loadFromFile("arial.ttf");
+		sf::Text text_surface(txt, font, 30);
+		text_surface.setFont(font);
+		text_surface.setPosition(x, y);
+		text_surface.setFillColor(color);
+		window.draw(text_surface);
+	}
+};
+
 	
 bool mouse_in_rect(sf::RenderWindow& window, int button_x, int button_y, int button_w, int button_h)
 {
@@ -37,9 +71,10 @@ bool mouse_in_rect(sf::RenderWindow& window, int button_x, int button_y, int but
 }
 
 
-void update_all_objects(List_of_platforms& platforms,Person& person,float& height,float dt){
+void update_all_objects(List_of_platforms& platforms,Person& person,float& height,My_text& score,float dt){
 	platforms.update(height,dt);
 	person.update(platforms,dt,height,window_height);
+	score.update(height);
 }
 
 
@@ -102,9 +137,10 @@ void rewrite_record(std::string name, int result)
 		bool found_player = false;
 		for (int j = 0; j < i; ++j)
 		{	
-			if ((records[j]->name == name) and (records[j]->result < result))
+			if (records[j]->name == name)
 			{
-				records[j]->result = result;
+				if (records[j]->result < result)
+					records[j]->result = result;
 				found_player = true;
 				break;
 			}
@@ -115,28 +151,26 @@ void rewrite_record(std::string name, int result)
 			if (i < 9)
 			{
 				Record* new_record = new Record(name, result);
-				records[i+1] = new_record;
-			}
-			int min = 0;
-			int min_number = -1;
-			for (int j = 0; j < i; ++j)
+				records[i] = new_record;
+			} else
 			{
-				if (records[j]->result < min)
+				int min = records[0]->result;
+				int min_number;
+				for (int j = 0; j < i; ++j)
 				{
-					min = records[j]->result;
-					min_number = j;
+					if (records[j]->result < min)
+					{
+						min = records[j]->result;
+						min_number = j;
+					}
+				}
+				if (min < result)
+				{
+					records[min_number]->name = name;
+					records[min_number]->result = result;
 				}
 			}
-
-			if (min_number != -1)
-			{
-				records[min_number]->name = name;
-				records[min_number]->result = result;
-			}
 		}
-
-		for (i = 0; i < 10; ++i)
-			delete records[i]; 
 	}
 
 	file.close();
@@ -149,6 +183,9 @@ void rewrite_record(std::string name, int result)
 	}
 
 	out_file.close();
+
+	for (int i = 0; i < 10; ++i)
+		delete records[i];
 };
 
 
@@ -199,18 +236,6 @@ int menu(sf::RenderWindow& window)
 }
 
 
-void draw_string(sf::RenderWindow& window, std::string txt)
-{
-	sf::Font font;
-	font.loadFromFile("arial.ttf");
-	sf::Text text_surface(txt, font, 30);
-	text_surface.setFont(font);
-	text_surface.setPosition(20, 20);
-	text_surface.setFillColor(sf::Color::Black);
-	window.draw(text_surface);
-}
-
-
 void records(sf::RenderWindow& window)
 {
 	Background background("images/background.png");
@@ -229,11 +254,13 @@ void records(sf::RenderWindow& window)
 				break;
 			table += '\n' + name + ' ' + record;
 		}
-		draw_string(window, table);
+		My_text table_drawable(table, 20, 20);
+		table_drawable.draw(window);
 	}
 	file.close();
 	window.display();
 
+	bool pressed = false;
 	sf::Event event;
 	while (window.isOpen())
 	{
@@ -243,6 +270,9 @@ void records(sf::RenderWindow& window)
 				window.close();
 			}
 			if (event.type == sf::Event::MouseButtonPressed){
+				pressed = true;
+			}
+			if ((event.type == sf::Event::MouseButtonReleased) and (pressed)){
 				return;
 			}
 		}
@@ -259,14 +289,16 @@ void main_cycle(sf::RenderWindow& window, std::string player_name)
 
 	List_of_platforms platforms;
 	Person person;
+	My_text score("score: 0", 5, 10, sf::Color::Red);
 
 	Graphics_manager graphics_manager;
+	graphics_manager.add(score);
 	graphics_manager.add(person);
 	graphics_manager.add(platforms);
 	graphics_manager.add(background);
 	
+	window.setMouseCursorVisible(false);
 	
-
 	while (window.isOpen())
 	{
 		float dt = clock.getElapsedTime().asSeconds();
@@ -285,11 +317,13 @@ void main_cycle(sf::RenderWindow& window, std::string player_name)
 			break;
 		}
 
-		update_all_objects(platforms,person,height,dt);
+		update_all_objects(platforms,person,height,score,dt);
 
 		graphics_manager.draw_all(window);
 		window.display();
 	}
+
+	window.setMouseCursorVisible(true);
 }
 
 
